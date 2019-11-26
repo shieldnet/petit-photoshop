@@ -50,10 +50,12 @@ private slots:
     void on_actionSquare_triggered();
     void on_actionBlack_White_triggered();
     void on_actionMosaic_triggered();
+    void on_actionEdge_Detection_triggered();
 
     void    updateLabel();
     void    doGrayScale();
     void    doMosaic(int);  //Window Size
+    void    doEdgeDetection(int);   //Threshold
 
     void    draw(const QPoint & pos);
 

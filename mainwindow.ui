@@ -110,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>17</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -147,6 +147,7 @@
     <addaction name="actionResize"/>
     <addaction name="actionInverse"/>
     <addaction name="actionMosaic_2"/>
+    <addaction name="actionEdge_Detection"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -255,6 +256,11 @@
    </property>
    <property name="text">
     <string>Eraser</string>
+   </property>
+  </action>
+  <action name="actionEdge_Detection">
+   <property name="text">
+    <string>Edge Detection</string>
    </property>
   </action>
  </widget>
