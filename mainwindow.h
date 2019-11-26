@@ -9,7 +9,10 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QPainter>
+#include <QtGui>
+#include <QTranslator>
 #include <QMouseEvent>
+#include <QInputDialog>
 
 namespace Ui {
 class MainWindow;
@@ -46,10 +49,11 @@ private slots:
     void on_actionDiaporama_triggered();
     void on_actionSquare_triggered();
     void on_actionBlack_White_triggered();
+    void on_actionMosaic_triggered();
 
     void    updateLabel();
     void    doGrayScale();
-
+    void    doMosaic(int);  //Window Size
 
     void    draw(const QPoint & pos);
 
