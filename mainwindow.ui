@@ -146,7 +146,8 @@
     <addaction name="actionResize"/>
     <addaction name="actionInverse"/>
     <addaction name="actionMosaic_2"/>
-    <addaction name="actionEdge_Detection"/>
+    <addaction name="actionEdge_Detection_Sobel"/>
+    <addaction name="actionEdge_Detection_Canny"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -257,9 +258,14 @@
     <string>Eraser</string>
    </property>
   </action>
-  <action name="actionEdge_Detection">
+  <action name="actionEdge_Detection_Sobel">
    <property name="text">
-    <string>Edge Detection</string>
+    <string>Sobel Edge Detection</string>
+   </property>
+  </action>
+  <action name="actionEdge_Detection_Canny">
+   <property name="text">
+    <string>Canny Edge Detection</string>
    </property>
   </action>
  </widget>

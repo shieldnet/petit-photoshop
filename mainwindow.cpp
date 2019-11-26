@@ -6,7 +6,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-
+#include <opencv2/core/base.hpp>
+#include <opencv2/core.hpp>
 //Basic Function Header
 #include <algorithm>
 #include <iostream>
@@ -236,25 +237,25 @@ void MainWindow::doMosaic(int wsize){
     updateLabel();
 }
 
-void MainWindow::on_actionEdge_Detection_triggered(){
+void MainWindow::on_actionEdge_Detection_Sobel_triggered(){
     if (pm.isNull()) {
         errorMessage("You must open an image before this action");
     }
     else {
         bool ok=false;
-        int threshold = QInputDialog::getInt(this, tr("Edgedetection Threshold"),
-                                         tr("Threshold:"), 25, 0, 255, 1, &ok);
+        int threshold = QInputDialog::getInt(this, tr("Edgedetection Threshold Percent(0-100)"),
+                                         tr("Percent"), 25, 0, 255, 1, &ok);
         if(threshold<=0){
             errorMessage("You have to set positive integer for windowsize.");
         }
         else{
-            doEdgeDetection(threshold);
+            doEdgeDetectionSobel(threshold);
         }
 
     }
 }
 
-void MainWindow::doEdgeDetection(int threshold_percent){
+void MainWindow::doEdgeDetectionSobel(int threshold_percent){
     QImage image = pm.toImage();
     int height = image.height();
     int width  = image.width();
@@ -333,7 +334,7 @@ void MainWindow::doEdgeDetection(int threshold_percent){
             break;
         }
     }
-    cout << final_threshold<<"\n";
+    //cout << final_threshold<<"\n";
 
     //Threshold apply
     for(int y=0;y<height;y++){
@@ -363,6 +364,277 @@ void MainWindow::doEdgeDetection(int threshold_percent){
 
 }
 
+void MainWindow::on_actionEdge_Detection_Canny_triggered(){
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        doEdgeDetectionCanny(50,200);
+    }
+}
+
+
+void MainWindow::doEdgeDetectionCanny(int upperThreshold, int lowerThreshold){
+    QImage image = pm.toImage();
+    int height = image.height();
+    int width  = image.width();
+    Mat cv_image(image.height(), image.width(), CV_8UC1);
+    vector<vector<int> > arr(height, vector<int>(width, 0));
+    QColor color;
+    //Initialize Image (QImage to Mat)
+    cout << height << " " << width << "\n";
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width;x++){
+            color= QColor(image.pixel(x,y));
+            int _r = color.red(), _g=color.green(), _b=color.blue();
+            cv_image.at<unsigned char>(y,x)=(_r+_g+_b)/3;
+        }
+    }
+    Mat workImg = cv_image.clone();
+    GaussianBlur(cv_image, workImg, Size(5, 5), 1.4);
+
+    Mat magX = Mat(cv_image.rows, cv_image.cols, CV_32F);
+    Mat magY = Mat(cv_image.rows, cv_image.cols, CV_32F);
+
+
+    Sobel(workImg, magX, CV_32F, 1, 0, 3);
+    Sobel(workImg, magY, CV_32F, 0, 1, 3);
+
+
+    Mat direction = Mat(workImg.rows, workImg.cols, CV_32F);
+
+    divide(magY, magX, direction);
+
+    Mat sum = Mat(workImg.rows, workImg.cols, CV_64F);
+    Mat prodX = Mat(workImg.rows, workImg.cols, CV_64F);
+    Mat prodY = Mat(workImg.rows, workImg.cols, CV_64F);
+
+    multiply(magX, magX, prodX);
+    multiply(magY, magY, prodY);
+
+    sum = prodX + prodY;
+
+    sqrt(sum, sum);
+
+    Mat returnImg = Mat(cv_image.rows, cv_image.cols, CV_8U);
+
+    returnImg.setTo(Scalar(0));         // Initialie image to return to zero
+
+    // Initialize iterators
+    MatIterator_<float>itMag = sum.begin<float>();
+    MatIterator_<float>itDirection = direction.begin<float>();
+
+    MatIterator_<unsigned char>itRet = returnImg.begin<unsigned char>();
+
+    MatIterator_<float>itend = sum.end<float>();
+
+    for(;itMag!=itend;++itDirection, ++itRet, ++itMag){
+        const Point pos = itRet.pos();
+
+        float currentDirection = atan(*itDirection) * 180 / 3.142;
+
+        while(currentDirection<0) currentDirection+=180;
+
+        *itDirection = currentDirection;
+
+        if(*itMag<upperThreshold) continue;
+
+        bool flag = true;
+
+        if(currentDirection>112.5 && currentDirection <=157.5) {
+            if(pos.y>0 && pos.x<workImg.cols-1 && *itMag<=sum.at<float>(pos.y-1, pos.x+1)) flag = false;
+            if(pos.y<workImg.rows-1 && pos.x>0 && *itMag<=sum.at<float>(pos.y+1, pos.x-1)) flag = false;
+        }
+        else if(currentDirection>67.5 && currentDirection <= 112.5)
+        {
+            if(pos.y>0 && *itMag<=sum.at<float>(pos.y-1, pos.x)) flag = false;
+            if(pos.y<workImg.rows-1 && *itMag<=sum.at<float>(pos.y+1, pos.x)) flag = false;
+        }
+        else if(currentDirection > 22.5 && currentDirection <= 67.5)
+        {
+            if(pos.y>0 && pos.x>0 && *itMag<=sum.at<float>(pos.y-1, pos.x-1)) flag = false;
+            if(pos.y<workImg.rows-1 && pos.x<workImg.cols-1 && *itMag<=sum.at<float>(pos.y+1, pos.x+1)) flag = false;
+        }
+        else
+        {
+            if(pos.x>0 && *itMag<=sum.at<float>(pos.y, pos.x-1)) flag = false;
+            if(pos.x<workImg.cols-1 && *itMag<=sum.at<float>(pos.y, pos.x+1)) flag = false;
+        }
+
+        if(flag)
+        {
+            *itRet = 255;
+        }
+    }
+
+    bool imageChanged = true;
+    int i=0;
+    while(imageChanged)
+    {
+        imageChanged = false;
+        i++;
+
+        itMag = sum.begin<float>();
+        itDirection = direction.begin<float>();
+        itRet = returnImg.begin<unsigned char>();
+        itend = sum.end<float>();
+
+        for(;itMag!=itend;++itMag, ++itDirection, ++itRet)
+        {
+            Point pos = itRet.pos();
+            if(pos.x<2 || pos.x>cv_image.cols-2 || pos.y<2 || pos.y>cv_image.rows-2)
+                continue;
+            float currentDirection = *itDirection;
+            if(*itRet==255)
+            {
+                *itRet=(unsigned char)64;
+                if(currentDirection>112.5 && currentDirection <= 157.5)
+                {
+                    if(pos.y>0 && pos.x>0)
+                    {
+                        if(lowerThreshold<=sum.at<float>(pos.y-1, pos.x-1) &&
+                        returnImg.at<unsigned char>(pos.y-1, pos.x-1)!=64 &&
+                        direction.at<float>(pos.y-1, pos.x-1) > 112.5 &&
+                        direction.at<float>(pos.y-1, pos.x-1) <= 157.5 &&
+                        sum.at<float>(pos.y-1, pos.x-1) > sum.at<float>(pos.y-2, pos.x) &&
+                        sum.at<float>(pos.y-1, pos.x-1) > sum.at<float>(pos.y, pos.x-2))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y-1, pos.x-1)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                    if(pos.y<workImg.rows-1 && pos.x<workImg.cols-1)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x+1, pos.y+1)) &&
+                        returnImg.at<unsigned char>(pos.y+1, pos.x+1)!=64 &&
+                        direction.at<float>(pos.y+1, pos.x+1) > 112.5 &&
+                        direction.at<float>(pos.y+1, pos.x+1) <= 157.5 &&
+                        sum.at<float>(pos.y-1, pos.x-1) > sum.at<float>(pos.y+2, pos.x) &&
+                        sum.at<float>(pos.y-1, pos.x-1) > sum.at<float>(pos.y, pos.x+2))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y+1, pos.x+1)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                }
+                else if(currentDirection>67.5 && currentDirection <= 112.5)
+                {
+                    if(pos.x>0)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x-1, pos.y)) &&
+                        returnImg.at<unsigned char>(pos.y, pos.x-1)!=64 &&
+                        direction.at<float>(pos.y, pos.x-1) > 67.5 &&
+                        direction.at<float>(pos.y, pos.x-1) <= 112.5 &&
+                        sum.at<float>(pos.y, pos.x-1) > sum.at<float>(pos.y-1, pos.x-1) &&
+                        sum.at<float>(pos.y, pos.x-1) > sum.at<float>(pos.y+1, pos.x-1))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y, pos.x-1)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                    if(pos.x<workImg.cols-1)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x+1, pos.y)) &&
+                        returnImg.at<unsigned char>(pos.y, pos.x+1)!=64 &&
+                        direction.at<float>(pos.y, pos.x+1) > 67.5 &&
+                        direction.at<float>(pos.y, pos.x+1) <= 112.5 &&
+                        sum.at<float>(pos.y, pos.x+1) > sum.at<float>(pos.y-1, pos.x+1) &&
+                        sum.at<float>(pos.y, pos.x+1) > sum.at<float>(pos.y+1, pos.x+1))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y, pos.x+1)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                }
+                else if(currentDirection > 22.5 && currentDirection <= 67.5)
+                {
+                    if(pos.y>0 && pos.x<workImg.cols-1)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x+1, pos.y-1)) &&
+                        returnImg.at<unsigned char>(pos.y-1, pos.x+1)!=64 &&
+                        direction.at<float>(pos.y-1, pos.x+1) > 22.5 &&
+                        direction.at<float>(pos.y-1, pos.x+1) <= 67.5 &&
+                        sum.at<float>(pos.y-1, pos.x+1) > sum.at<float>(pos.y-2, pos.x) &&
+                        sum.at<float>(pos.y-1, pos.x+1) > sum.at<float>(pos.y, pos.x+2))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y-1, pos.x+1)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                    if(pos.y<workImg.rows-1 && pos.x>0)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x-1, pos.y+1)) &&
+                        returnImg.at<unsigned char>(pos.y+1, pos.x-1)!=64 &&
+                        direction.at<float>(pos.y+1, pos.x-1) > 22.5 &&
+                        direction.at<float>(pos.y+1, pos.x-1) <= 67.5 &&
+                        sum.at<float>(pos.y+1, pos.x-1) > sum.at<float>(pos.y, pos.x-2) &&
+                        sum.at<float>(pos.y+1, pos.x-1) > sum.at<float>(pos.y+2, pos.x))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y+1, pos.x-1)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if(pos.y>0)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x, pos.y-1)) &&
+                        returnImg.at<unsigned char>(pos.y-1, pos.x)!=64 &&
+                        (direction.at<float>(pos.y-1, pos.x) < 22.5 ||
+                        direction.at<float>(pos.y-1, pos.x) >=157.5) &&
+                        sum.at<float>(pos.y-1, pos.x) > sum.at<float>(pos.y-1, pos.x-1) &&
+                        sum.at<float>(pos.y-1, pos.x) > sum.at<float>(pos.y-1, pos.x+2))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y-1, pos.x)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                    if(pos.y<workImg.rows-1)
+                    {
+                        if(lowerThreshold<=sum.at<float>(Point(pos.x, pos.y+1)) &&
+                        returnImg.at<unsigned char>(pos.y+1, pos.x)!=64 &&
+                        (direction.at<float>(pos.y+1, pos.x) < 22.5 ||
+                        direction.at<float>(pos.y+1, pos.x) >=157.5) &&
+                        sum.at<float>(pos.y+1, pos.x) > sum.at<float>(pos.y+1, pos.x-1) &&
+                        sum.at<float>(pos.y+1, pos.x) > sum.at<float>(pos.y+1, pos.x+1))
+                        {
+                            returnImg.ptr<unsigned char>(pos.y+1, pos.x)[0] = 255;
+                            imageChanged = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    MatIterator_<unsigned char>current = returnImg.begin<unsigned char>();    MatIterator_<unsigned char>final = returnImg.end<unsigned char>();
+    for(;current!=final;++current)
+    {
+        if(*current==64)
+            *current = 255;
+    }
+
+    //returnImg << CannyFiltered.
+    //Mat to QImage
+    cout << returnImg.rows << " " << returnImg.cols << "\n";
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width;x++){
+            QColor color(image.pixel(x,y));
+            int _b=returnImg.at<unsigned char>(y,x);
+            int _g=returnImg.at<unsigned char>(y,x);
+            int _r=returnImg.at<unsigned char>(y,x);
+            color.setRgb(_r,_g,_b);
+            image.setPixel(x, y, color.rgba());
+        }
+    }
+    pm = QPixmap::fromImage(image);
+    update();
+    updateLabel();
+
+
+
+
+}
 
 void MainWindow::draw(const QPoint & pos) {
         QPainter painter{&pm};

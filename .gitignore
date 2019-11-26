@@ -12,6 +12,8 @@
 .DS_Store
 
 ### Qt ###
+# pro file
+*.pro
 # C++ objects and libs
 *.slo
 *.lo

@@ -50,12 +50,14 @@ private slots:
     void on_actionSquare_triggered();
     void on_actionBlack_White_triggered();
     void on_actionMosaic_triggered();
-    void on_actionEdge_Detection_triggered();
+    void on_actionEdge_Detection_Sobel_triggered();
+    void on_actionEdge_Detection_Canny_triggered();
 
     void    updateLabel();
     void    doGrayScale();
-    void    doMosaic(int);  //Window Size
-    void    doEdgeDetection(int);   //Threshold
+    void    doMosaic(int);              //Window Size
+    void    doEdgeDetectionSobel(int);  //Percent Threshold
+    void    doEdgeDetectionCanny(int,int);     //Threshold
 
     void    draw(const QPoint & pos);
 
