@@ -143,7 +143,6 @@
     <addaction name="actionBlack_White"/>
     <addaction name="actionContrast"/>
     <addaction name="actionBlur"/>
-    <addaction name="actionMosaic"/>
     <addaction name="actionResize"/>
     <addaction name="actionInverse"/>
     <addaction name="actionMosaic_2"/>
