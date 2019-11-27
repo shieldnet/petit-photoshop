@@ -33,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->label_image->move(100, 100);
     ui->actionbackRedo->setEnabled(false);
     ui->back->setEnabled(false);
+    spinBoxToolBar = new QSpinBox(this);
+    spinBoxToolBar->setMinimum(2);
+    spinBoxToolBar->setToolTip("Pen's width");
+    ui->mainToolBar->addWidget(spinBoxToolBar);
 }
 
 MainWindow::~MainWindow()
@@ -373,12 +377,39 @@ void MainWindow::doEdgeDetection(int threshold_percent){
 
 }
 
-
 void MainWindow::draw(const QPoint & pos) {
         QPainter painter{&pm};
+        QPen pen;
+
+        pen.setStyle(Qt::DashDotLine);
+        pen.setWidth(spinBoxToolBar->value());
+        pen.setBrush(Qt::blue);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.setPen({Qt::blue, 2.0});
+        painter.setPen(pen);
         painter.drawLine(lastPos, pos);
+
+        lastPos = pos;
+        update();
+        updateLabel();
+}
+
+void MainWindow::erase(const QPoint & pos) {
+        QPainter painter{&pm};
+        QPen pen;
+
+        pen.setStyle(Qt::DashDotLine);
+        pen.setWidth(spinBoxToolBar->value());
+        pen.setBrush(Qt::white);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setPen(pen);
+        painter.drawLine(lastPos, pos);
+
         lastPos = pos;
         update();
         updateLabel();
@@ -391,6 +422,30 @@ void    MainWindow::errorMessage(const QString &error) {
 void MainWindow::on_actionPen_toggled(bool arg1)
 {
     pen = arg1;
+}
+
+void MainWindow::on_actionEraser_toggled(bool arg1)
+{
+    eraser = arg1;
+}
+
+void MainWindow::on_actionPen_triggered()
+{
+    eraser = false;
+    ui->actionEraser->setChecked(false);
+    ui->actionPen->setChecked(true);
+}
+
+void MainWindow::on_actionEraser_triggered()
+{
+    pen = false;
+    ui->actionPen->setChecked(false);
+    ui->actionEraser->setChecked(true);
+}
+
+void MainWindow::on_actionColorPicker_triggered()
+{
+    QColorDialog *palette = new QColorDialog(this);
 }
 
 void MainWindow::undo() {

@@ -13,6 +13,9 @@
 #include <QTranslator>
 #include <QMouseEvent>
 #include <QInputDialog>
+#include <QSpinBox>
+#include <QColorDialog>
+#include <QPushButton>
 
 namespace Ui {
 class MainWindow;
@@ -58,6 +61,7 @@ private slots:
     void    doEdgeDetection(int);   //Threshold
 
     void    draw(const QPoint & pos);
+    void    erase(const QPoint & pos);
 
     void mousePressEvent(QMouseEvent * ev) override {
         if (pen) {
@@ -66,6 +70,12 @@ private slots:
             tmp.setY(tmp.y() - 130);
             lastPos = tmp;
             draw(tmp);
+        } else if (eraser) {
+            QPoint tmp = ev->pos();
+            tmp.setX(tmp.x() - 146);
+            tmp.setY(tmp.y() - 130);
+            lastPos = tmp;
+            erase(tmp);
         }
     }
 
@@ -75,10 +85,22 @@ private slots:
             tmp.setX(tmp.x() - 146);
             tmp.setY(tmp.y() - 130);
             draw(tmp);
+        } else if (eraser) {
+            QPoint tmp = ev->pos();
+            tmp.setX(tmp.x() - 146);
+            tmp.setY(tmp.y() - 130);
+            erase(tmp);
         }
     }
 
     void on_actionPen_toggled(bool arg1);
+    void on_actionEraser_toggled(bool arg1);
+
+    void on_actionPen_triggered();
+
+    void on_actionEraser_triggered();
+
+    void on_actionColorPicker_triggered();
 
     void on_back_triggered();
 
@@ -97,6 +119,9 @@ private:
     QString currentFile;
     QMessageBox messageBox;
     bool    pen = false;
+    bool    eraser = false;
+    double  penSize = 2.0;
+    QSpinBox *spinBoxToolBar;
     QPoint  lastPos;
 };
 
