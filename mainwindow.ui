@@ -267,10 +267,10 @@
   <action name="back">
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/back.jpg</normaloff>:/icons/back.jpg</iconset>
+     <normaloff>:/icons/back.png</normaloff>:/icons/back.png</iconset>
    </property>
    <property name="text">
-    <string>backReverse</string>
+    <string>Undo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -279,10 +279,10 @@
   <action name="actionbackRedo">
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/backUndo.jpg</normaloff>:/icons/backUndo.jpg</iconset>
+     <normaloff>:/icons/backUndo.png</normaloff>:/icons/backUndo.png</iconset>
    </property>
    <property name="text">
-    <string>backRedo</string>
+    <string>Redo</string>
    </property>
   </action>
  </widget>

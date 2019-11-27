@@ -4,7 +4,7 @@
         <file>icons/eraser.png</file>
     </qresource>
     <qresource prefix="/">
-        <file>icons/back.jpg</file>
-        <file>icons/backUndo.jpg</file>
+        <file>icons/back.png</file>
+        <file>icons/backUndo.png</file>
     </qresource>
 </RCC>

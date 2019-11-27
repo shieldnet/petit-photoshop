@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle("Petit Photoshop");
     //setStyleSheet("background-color: grey;");
     ui->label_image->move(100, 100);
+    ui->actionbackRedo->setEnabled(false);
+    ui->back->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -44,6 +46,7 @@ void        MainWindow::updateLabel() {
 
 void        MainWindow::savePm() {
     _lastPm = pm;
+    ui->back->setEnabled(true);
 }
 
 void        MainWindow::openImage(const QString &filename) {
@@ -394,11 +397,15 @@ void MainWindow::undo() {
     _nextPm = pm;
     pm = _lastPm;
     _redo = true;
+    ui->actionbackRedo->setEnabled(true);
+    ui->back->setEnabled(false);
 }
 
 void MainWindow::redo() {
     pm = _nextPm;
     updateLabel();
+    ui->actionbackRedo->setEnabled(false);
+    ui->back->setEnabled(true);
     _redo = false;
 }
 
