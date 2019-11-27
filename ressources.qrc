@@ -3,4 +3,7 @@
         <file>icons/pen.png</file>
         <file>icons/eraser.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>icons/back.jpg</file>
+    </qresource>
 </RCC>
