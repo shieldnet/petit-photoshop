@@ -162,6 +162,7 @@
    <addaction name="actionPen"/>
    <addaction name="actionEraser"/>
    <addaction name="back"/>
+   <addaction name="actionbackRedo"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -273,6 +274,15 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionbackRedo">
+   <property name="icon">
+    <iconset resource="ressources.qrc">
+     <normaloff>:/icons/backUndo.jpg</normaloff>:/icons/backUndo.jpg</iconset>
+   </property>
+   <property name="text">
+    <string>backRedo</string>
    </property>
   </action>
  </widget>

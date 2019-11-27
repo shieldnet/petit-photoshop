@@ -82,11 +82,17 @@ private slots:
 
     void on_back_triggered();
 
+    void on_actionbackRedo_triggered();
+
 private:
     void        savePm();
+    void        undo();
+    void        redo();
     Ui::MainWindow *ui;
     QPixmap pm;
     QPixmap _lastPm;
+    QPixmap _nextPm;
+    bool    _redo = false;
     //QFile currentFile;
     QString currentFile;
     QMessageBox messageBox;

@@ -390,8 +390,27 @@ void MainWindow::on_actionPen_toggled(bool arg1)
     pen = arg1;
 }
 
+void MainWindow::undo() {
+    _nextPm = pm;
+    pm = _lastPm;
+    _redo = true;
+}
+
+void MainWindow::redo() {
+    pm = _nextPm;
+    updateLabel();
+    _redo = false;
+}
+
 void MainWindow::on_back_triggered()
 {
-    pm = _lastPm;
+    undo();
     updateLabel();
+}
+
+void MainWindow::on_actionbackRedo_triggered()
+{
+    if (_redo) {
+        redo();
+    }
 }
