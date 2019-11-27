@@ -42,6 +42,10 @@ void        MainWindow::updateLabel() {
     ui->label_image->setPixmap(pm);
 }
 
+void        MainWindow::savePm() {
+    _lastPm = pm;
+}
+
 void        MainWindow::openImage(const QString &filename) {
     std::cout << filename.toStdString() << std::endl;
     QFile tmp(filename);
@@ -53,6 +57,7 @@ void        MainWindow::openImage(const QString &filename) {
 void    MainWindow::openNewImage(const IMAGE_SIZE &format) {
     currentFile = "new_image.jpg";
     setLabelToNew(format);
+    _lastPm = pm;
 }
 
 void        MainWindow::setLabelImage(const QString &filename) {
@@ -74,6 +79,7 @@ void    MainWindow::setLabelToNew(const IMAGE_SIZE &format) {
     };
     pm.fill(Qt::white);
     updateLabel();
+    _lastPm = pm;
     ui->label_image->resize(pm.width(), pm.height());
 }
 
@@ -119,6 +125,7 @@ void MainWindow::on_actionSquare_triggered()
 }
 
 void MainWindow::doGrayScale() {
+    savePm();
     QImage image = pm.toImage();
     for(int y=0; y<image.height(); y++) {
         for(int x=0; x<image.width(); x++) {
@@ -381,4 +388,10 @@ void    MainWindow::errorMessage(const QString &error) {
 void MainWindow::on_actionPen_toggled(bool arg1)
 {
     pen = arg1;
+}
+
+void MainWindow::on_back_triggered()
+{
+    pm = _lastPm;
+    updateLabel();
 }

@@ -80,9 +80,13 @@ private slots:
 
     void on_actionPen_toggled(bool arg1);
 
+    void on_back_triggered();
+
 private:
+    void        savePm();
     Ui::MainWindow *ui;
     QPixmap pm;
+    QPixmap _lastPm;
     //QFile currentFile;
     QString currentFile;
     QMessageBox messageBox;
