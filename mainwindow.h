@@ -121,6 +121,7 @@ private:
     bool    pen = false;
     bool    eraser = false;
     double  penSize = 2.0;
+    QColorDialog *palette;
     QSpinBox *spinBoxToolBar;
     QPoint  lastPos;
 };

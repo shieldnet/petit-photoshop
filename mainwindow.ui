@@ -165,6 +165,7 @@
    <addaction name="actionPen"/>
    <addaction name="actionEraser"/>
    <addaction name="separator"/>
+   <addaction name="actionColorPicker"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -297,6 +298,18 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionColorPicker">
+   <property name="icon">
+    <iconset resource="ressources.qrc">
+     <normaloff>:/icons/color.jpg</normaloff>:/icons/color.jpg</iconset>
+   </property>
+   <property name="text">
+    <string>ColorPicker</string>
+   </property>
+   <property name="toolTip">
+    <string>Color Picker</string>
    </property>
   </action>
  </widget>

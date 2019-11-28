@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->label_image->move(100, 100);
     ui->actionbackRedo->setEnabled(false);
     ui->back->setEnabled(false);
+    palette = new QColorDialog(this);
     spinBoxToolBar = new QSpinBox(this);
     spinBoxToolBar->setMinimum(2);
     spinBoxToolBar->setToolTip("Pen's width");
@@ -383,7 +384,7 @@ void MainWindow::draw(const QPoint & pos) {
 
         pen.setStyle(Qt::DashDotLine);
         pen.setWidth(spinBoxToolBar->value());
-        pen.setBrush(Qt::blue);
+        pen.setBrush(palette->selectedColor());
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::RoundJoin);
 
@@ -445,7 +446,7 @@ void MainWindow::on_actionEraser_triggered()
 
 void MainWindow::on_actionColorPicker_triggered()
 {
-    QColorDialog *palette = new QColorDialog(this);
+    palette->show();
 }
 
 void MainWindow::undo() {
