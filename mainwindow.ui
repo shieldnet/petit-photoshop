@@ -110,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>17</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -159,10 +159,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionPen"/>
-   <addaction name="actionEraser"/>
    <addaction name="back"/>
    <addaction name="actionbackRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionPen"/>
+   <addaction name="actionEraser"/>
+   <addaction name="separator"/>
+   <addaction name="actionColorPicker"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -241,7 +244,7 @@
    </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/icons/pen.png</normaloff>:/icons/icons/pen.png</iconset>
+     <normaloff>:/icons/pen.png</normaloff>:/icons/pen.png</iconset>
    </property>
    <property name="text">
     <string>Pen</string>
@@ -251,9 +254,12 @@
    </property>
   </action>
   <action name="actionEraser">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/icons/eraser.png</normaloff>:/icons/icons/eraser.png</iconset>
+     <normaloff>:/icons/eraser.png</normaloff>:/icons/eraser.png</iconset>
    </property>
    <property name="text">
     <string>Eraser</string>
@@ -265,9 +271,12 @@
    </property>
   </action>
   <action name="back">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/back.png</normaloff>:/icons/back.png</iconset>
+     <normaloff>:/icons/back.jpg</normaloff>:/icons/back.jpg</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -277,12 +286,30 @@
    </property>
   </action>
   <action name="actionbackRedo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/backUndo.png</normaloff>:/icons/backUndo.png</iconset>
+     <normaloff>:/icons/backUndo.jpg</normaloff>:/icons/backUndo.jpg</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionColorPicker">
+   <property name="icon">
+    <iconset resource="ressources.qrc">
+     <normaloff>:/icons/color.jpg</normaloff>:/icons/color.jpg</iconset>
+   </property>
+   <property name="text">
+    <string>ColorPicker</string>
+   </property>
+   <property name="toolTip">
+    <string>Color Picker</string>
    </property>
   </action>
  </widget>
