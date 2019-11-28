@@ -60,6 +60,7 @@ private slots:
     void    doGrayScale();
     void    doMosaic(int);  //Window Size
     void    doEdgeDetection(int);   //Threshold
+    void    doBrightness(int);
 
     void    draw(const QPoint & pos);
     void    erase(const QPoint & pos);

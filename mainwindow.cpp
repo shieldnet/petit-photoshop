@@ -423,14 +423,13 @@ void MainWindow::write(const QPoint & pos) {
     font.setPixelSize(spinBoxToolBar->value());
     painter.setFont(font);
     painter.setPen(QPen(palette->selectedColor()));
-    QString str = textEdit->toPlainText();
+    QString str = QInputDialog::getMultiLineText(this, tr("Enter your text"),
+                                             tr("Text:"));
     painter.drawText(pos.x(), pos.y(), str);
 
     text = false;
     update();
     updateLabel();
-    textEdit->clear();
-    textEdit->hide();
 }
 
 void    MainWindow::errorMessage(const QString &error) {
@@ -473,8 +472,6 @@ void MainWindow::on_actionTextBox_triggered()
     eraser = false;
     pen = false;
     text = true;
-    textEdit = new QTextEdit(this);
-    textEdit->show();
 }
 
 void MainWindow::undo() {
@@ -506,7 +503,44 @@ void MainWindow::on_actionbackRedo_triggered()
     }
 }
 
+void MainWindow::doBrightness(int level) {
+    savePm();
+    QImage image = pm.toImage();
+    for(int y=0; y<image.height(); y++) {
+        for(int x=0; x<image.width(); x++) {
+            QColor color(image.pixel(x,y));
+            if (level >= 0) {
+                color.setRed(color.red() + level > 255 ? 255 : color.red() + level);
+                color.setGreen(color.green() + level > 255 ? 255 : color.green() + level);
+                color.setBlue(color.blue() + level > 255 ? 255 : color.blue() + level);
+            } else {
+                color.setRed(color.red() + level < 0 ? 0 : color.red() + level);
+                color.setGreen(color.green() + level < 0 ? 0 : color.green() + level);
+                color.setBlue(color.blue() + level < 0 ? 0 : color.blue() + level);
+            }
+
+            image.setPixel(x, y, color.rgba());
+        }
+    }
+    pm = QPixmap::fromImage(image);
+    updateLabel();
+}
+
 void MainWindow::on_actionBrightness_triggered()
 {
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        bool ok=false;
+        int level = QInputDialog::getInt(this, tr("Level of Brightness (between -255 and 255)"),
+                                         tr("Level:"), 0, -255, 255, 1, &ok);
+        if(level< -255 || level > 255){
+            errorMessage("You have to set an integer between -255 and 255.");
+        }
+        else{
+            doBrightness(level);
+        }
 
+    }
 }
