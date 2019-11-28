@@ -416,6 +416,23 @@ void MainWindow::erase(const QPoint & pos) {
         updateLabel();
 }
 
+void MainWindow::write(const QPoint & pos) {
+    QPainter painter{&pm};
+    QFont font;
+
+    font.setPixelSize(spinBoxToolBar->value());
+    painter.setFont(font);
+    painter.setPen(QPen(palette->selectedColor()));
+    QString str = textEdit->toPlainText();
+    painter.drawText(pos.x(), pos.y(), str);
+
+    text = false;
+    update();
+    updateLabel();
+    textEdit->clear();
+    textEdit->hide();
+}
+
 void    MainWindow::errorMessage(const QString &error) {
     messageBox.critical(0,"Error", error);
 }
@@ -433,6 +450,7 @@ void MainWindow::on_actionEraser_toggled(bool arg1)
 void MainWindow::on_actionPen_triggered()
 {
     eraser = false;
+    text = false;
     ui->actionEraser->setChecked(false);
     ui->actionPen->setChecked(true);
 }
@@ -440,6 +458,7 @@ void MainWindow::on_actionPen_triggered()
 void MainWindow::on_actionEraser_triggered()
 {
     pen = false;
+    text = false;
     ui->actionPen->setChecked(false);
     ui->actionEraser->setChecked(true);
 }
@@ -447,6 +466,15 @@ void MainWindow::on_actionEraser_triggered()
 void MainWindow::on_actionColorPicker_triggered()
 {
     palette->show();
+}
+
+void MainWindow::on_actionTextBox_triggered()
+{
+    eraser = false;
+    pen = false;
+    text = true;
+    textEdit = new QTextEdit(this);
+    textEdit->show();
 }
 
 void MainWindow::undo() {
@@ -476,4 +504,9 @@ void MainWindow::on_actionbackRedo_triggered()
     if (_redo) {
         redo();
     }
+}
+
+void MainWindow::on_actionBrightness_triggered()
+{
+
 }

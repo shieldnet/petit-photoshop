@@ -16,6 +16,7 @@
 #include <QSpinBox>
 #include <QColorDialog>
 #include <QPushButton>
+#include <QTextEdit>
 
 namespace Ui {
 class MainWindow;
@@ -62,6 +63,7 @@ private slots:
 
     void    draw(const QPoint & pos);
     void    erase(const QPoint & pos);
+    void    write(const QPoint & pos);
 
     void mousePressEvent(QMouseEvent * ev) override {
         if (pen) {
@@ -76,6 +78,12 @@ private slots:
             tmp.setY(tmp.y() - 130);
             lastPos = tmp;
             erase(tmp);
+        }else if (text) {
+            QPoint tmp = ev->pos();
+            tmp.setX(tmp.x() - 146);
+            tmp.setY(tmp.y() - 130);
+            lastPos = tmp;
+            write(tmp);
         }
     }
 
@@ -106,6 +114,10 @@ private slots:
 
     void on_actionbackRedo_triggered();
 
+    void on_actionTextBox_triggered();
+
+    void on_actionBrightness_triggered();
+
 private:
     void        savePm();
     void        undo();
@@ -120,10 +132,12 @@ private:
     QMessageBox messageBox;
     bool    pen = false;
     bool    eraser = false;
+    bool    text = false;
     double  penSize = 2.0;
     QColorDialog *palette;
     QSpinBox *spinBoxToolBar;
     QPoint  lastPos;
+    QTextEdit *textEdit;
 };
 
 #endif // MAINWINDOW_H
