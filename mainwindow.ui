@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>476</width>
+    <height>341</height>
    </rect>
   </property>
   <property name="palette">
@@ -109,7 +109,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>476</width>
      <height>26</height>
     </rect>
    </property>
@@ -164,6 +164,7 @@
    <addaction name="separator"/>
    <addaction name="actionPen"/>
    <addaction name="actionEraser"/>
+   <addaction name="actionTextBox"/>
    <addaction name="separator"/>
    <addaction name="actionColorPicker"/>
   </widget>
@@ -310,6 +311,18 @@
    </property>
    <property name="toolTip">
     <string>Color Picker</string>
+   </property>
+  </action>
+  <action name="actionTextBox">
+   <property name="icon">
+    <iconset resource="ressources.qrc">
+     <normaloff>:/icons/text.png</normaloff>:/icons/text.png</iconset>
+   </property>
+   <property name="text">
+    <string>TextBox</string>
+   </property>
+   <property name="toolTip">
+    <string>Text Area</string>
    </property>
   </action>
  </widget>
