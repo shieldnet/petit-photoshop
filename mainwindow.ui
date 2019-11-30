@@ -145,7 +145,7 @@
     <addaction name="actionBlur"/>
     <addaction name="actionResize"/>
     <addaction name="actionInverse"/>
-    <addaction name="actionMosaic_2"/>
+    <addaction name="actionMosaic"/>
     <addaction name="actionEdge_Detection"/>
    </widget>
    <addaction name="menuFile"/>
