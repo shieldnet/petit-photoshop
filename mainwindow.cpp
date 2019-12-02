@@ -544,3 +544,84 @@ void MainWindow::on_actionBrightness_triggered()
 
     }
 }
+
+
+void MainWindow::doGaussianBlur(int intensity) {
+    savePm();
+    QImage image = pm.toImage();
+    unsigned int width = image.width();
+    unsigned int height = image.height();
+    Mat cv_image(height, width, CV_8UC3);
+    int r;
+    int g;
+    int b;
+    int mask[5][5] = {
+        {1, 4, 6, 4, 1},
+        {4, 16, 24, 16, 4},
+        {6, 24, 36, 24, 6},
+        {4, 16, 24, 16, 4},
+        {1, 4, 6, 4, 1}
+    };
+
+    for (int i = 0; i < intensity; i++) {
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                r = 0; g = 0; b = 0;
+
+                for (int y1 = 0; y1 < 5; y1++) {
+                    if (y1 + y - 2 < 0 || y1 + y - 2 >= image.height())
+                        continue;
+                    for (int x1 = 0; x1 < 5; x1++) {
+                        if (x1 + x - 2 < 0 || x1 + x - 2 >= image.width())
+                            continue;
+                        QColor color(image.pixel(x + x1 - 2, y + y1 - 2));
+
+                        r += color.red() * mask[y1][x1];
+                        g += color.green() * mask[y1][x1];
+                        b += color.blue() * mask[y1][x1];
+                    }
+                }
+
+                r /= 256;
+                g /= 256;
+                b /= 256;
+
+                cv_image.at<Vec3b>(y, x)[B]=(unsigned char)b;
+                cv_image.at<Vec3b>(y, x)[G]=(unsigned char)g;
+                cv_image.at<Vec3b>(y, x)[R]=(unsigned char)r;
+            }
+        }
+
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                QColor color(image.pixel(x,y));
+                r = cv_image.at<Vec3b>(y,x)[R];
+                g = cv_image.at<Vec3b>(y,x)[G];
+                b = cv_image.at<Vec3b>(y,x)[B];
+                color.setRgb(r, g, b);
+                image.setPixel(x, y, color.rgba());
+            }
+        }
+    }
+
+    pm = QPixmap::fromImage(image);
+    updateLabel();
+}
+
+void MainWindow::on_actionBlur_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        bool ok=false;
+        int intensity = QInputDialog::getInt(this, tr("Blur intensity"), tr("Intensity:"), 0, 0, 20, 1, &ok);
+        if(intensity < 0 || intensity > 100){
+            errorMessage("You have to set an integer between 0 and 20.");
+        }
+        else{
+            doGaussianBlur(intensity);
+        }
+
+    }
+}

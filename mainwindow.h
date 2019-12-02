@@ -61,6 +61,7 @@ private slots:
     void    doMosaic(int);  //Window Size
     void    doEdgeDetection(int);   //Threshold
     void    doBrightness(int);
+    void    doGaussianBlur(int);
 
     void    draw(const QPoint & pos);
     void    erase(const QPoint & pos);
@@ -119,6 +120,7 @@ private slots:
 
     void on_actionBrightness_triggered();
 
+    void on_actionBlur_triggered();
 private:
     void        savePm();
     void        undo();
