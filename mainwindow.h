@@ -62,6 +62,9 @@ private slots:
     void    doEdgeDetection(int);   //Threshold
     void    doBrightness(int);
     void    doGaussianBlur(int);
+    void    doResize(int, int);
+    void    doInverse();
+    void    doContrast(int);
 
     void    draw(const QPoint & pos);
     void    erase(const QPoint & pos);
@@ -121,6 +124,12 @@ private slots:
     void on_actionBrightness_triggered();
 
     void on_actionBlur_triggered();
+
+    void on_actionResize_triggered();
+
+    void on_actionInverse_triggered();
+
+    void on_actionContrast_triggered();
 private:
     void        savePm();
     void        undo();

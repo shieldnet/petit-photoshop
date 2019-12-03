@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <vector>
 
+#define NORMALIZE(x) x < 0 ? 0 : x > 255 ? 255 : x
+
 using namespace std;
 using namespace cv;
 
@@ -102,6 +104,11 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
+    if (pm.isNull()) {
+        errorMessage("You must open or create an image before saving.");
+        return;
+    }
+
     QString path = QFileDialog::getSaveFileName(0, tr("Save File"), currentFile);
     pm.save(path);
 }
@@ -631,5 +638,121 @@ void MainWindow::on_actionBlur_triggered()
             doGaussianBlur(intensity);
         }
 
+    }
+}
+
+void MainWindow::doResize(int newWidth, int newHeight)
+{
+    savePm();
+    QImage image = pm.toImage();
+    QImage output = QImage(newWidth, newHeight, QImage::Format_ARGB32);
+    unsigned int width = image.width();
+    unsigned int height = image.height();
+
+    for(int y = 0; y < newHeight; y++) {
+        for(int x = 0; x < newWidth; x++) {
+            QColor color(image.pixel(x * (float)width / newWidth, y * (float)height / newHeight));
+
+            output.setPixel(x, y, color.rgba());
+        }
+    }
+
+    _lastPm = pm;
+    pm = QPixmap::fromImage(output);
+    ui->label_image->resize(newWidth, newHeight);
+    updateLabel();
+}
+
+void MainWindow::on_actionResize_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        bool ok=false;
+        int newWidth = QInputDialog::getInt(this, tr("Please enter new width"), tr("New width:"), 0, 0, 4000, 1, &ok);
+        int newHeight = QInputDialog::getInt(this, tr("Please enter new height"), tr("New height:"), 0, 0, 4000, 1, &ok);
+        if(newWidth < 0 || newWidth > 4000 || newHeight < 0 || newHeight > 4000){
+            errorMessage("You have to set an integer between 0 and 4000.");
+        }
+        else{
+            doResize(newWidth, newHeight);
+        }
+
+    }
+}
+
+void MainWindow::doInverse()
+{
+    savePm();
+    QImage image = pm.toImage();
+    unsigned int width = image.width();
+    unsigned int height = image.height();
+
+    for(int y = 0; y < height; y++) {
+        for(int x = 0; x < width; x++) {
+            QColor colorFrom(image.pixel(x, y));
+            QColor colorTo = QColor(255 - colorFrom.red(), 255 - colorFrom.green(), 255 - colorFrom.blue(), colorFrom.alpha());
+
+            image.setPixel(x, y, colorTo.rgba());
+        }
+    }
+
+    pm = QPixmap::fromImage(image);
+    updateLabel();
+}
+
+void MainWindow::on_actionInverse_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        doInverse();
+    }
+}
+
+
+void MainWindow::doContrast(int targetValue)
+{
+    savePm();
+    QImage image = pm.toImage();
+    unsigned int width = image.width();
+    unsigned int height = image.height();
+    float factor = (float)(259 * (targetValue + 255)) / (255 * (259 - targetValue));
+
+    std::cout << factor << std::endl;
+    for(int y = 0; y < height; y++) {
+        for(int x = 0; x < width; x++) {
+            QColor colorFrom(image.pixel(x, y));
+            QColor colorTo = QColor(
+                    NORMALIZE((colorFrom.red() - 128) * factor + 128),
+                    NORMALIZE((colorFrom.green() - 128) * factor + 128),
+                    NORMALIZE((colorFrom.blue() - 128) * factor + 128),
+                    colorFrom.alpha()
+            );
+            image.setPixel(x, y, colorTo.rgba());
+
+        }
+    }
+
+    pm = QPixmap::fromImage(image);
+    updateLabel();
+}
+
+void MainWindow::on_actionContrast_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        bool ok=false;
+        int targetValue = QInputDialog::getInt(this, tr("Contrast value: "), tr("value:"), 0, -255, 255, 1, &ok);
+        if (targetValue < -255 || targetValue > 255){
+            errorMessage("You have to set an integer between -255 and 255.");
+        }
+        else{
+            doContrast(targetValue);
+        }
     }
 }
