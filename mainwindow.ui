@@ -148,8 +148,15 @@
     <addaction name="actionMosaic"/>
     <addaction name="actionEdge_Detection"/>
    </widget>
+   <widget class="QMenu" name="menuSelection">
+    <property name="title">
+     <string>Selection</string>
+    </property>
+    <addaction name="actionCut_selection"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
+   <addaction name="menuSelection"/>
    <addaction name="menuOptions"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -164,6 +171,7 @@
    <addaction name="separator"/>
    <addaction name="actionPen"/>
    <addaction name="actionEraser"/>
+   <addaction name="actionSelection"/>
    <addaction name="actionTextBox"/>
    <addaction name="separator"/>
    <addaction name="actionColorPicker"/>
@@ -323,6 +331,26 @@
    </property>
    <property name="toolTip">
     <string>Text Area</string>
+   </property>
+  </action>
+  <action name="actionSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressources.qrc">
+     <normaloff>:/icons/selection.png</normaloff>:/icons/selection.png</iconset>
+   </property>
+   <property name="text">
+    <string>Selection</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selector&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionCut_selection">
+   <property name="text">
+    <string>Cut selection</string>
    </property>
   </action>
  </widget>

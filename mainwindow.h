@@ -65,10 +65,16 @@ private slots:
     void    doResize(int, int);
     void    doInverse();
     void    doContrast(int);
+    void    doCutSelection();
 
     void    draw(const QPoint & pos);
     void    erase(const QPoint & pos);
     void    write(const QPoint & pos);
+    void    select(const QPoint &pos, bool);
+
+    void    drawSelection();
+    void    clearSelection();
+    void    normalizeSelection();
 
     void mousePressEvent(QMouseEvent * ev) override {
         if (pen) {
@@ -89,6 +95,12 @@ private slots:
             tmp.setY(tmp.y() - 130);
             lastPos = tmp;
             write(tmp);
+        }else if (selection){
+            QPoint tmp = ev->pos();
+            tmp.setX(tmp.x() - 146);
+            tmp.setY(tmp.y() - 130);
+            lastPos = tmp;
+            select(tmp, true);
         }
     }
 
@@ -103,15 +115,23 @@ private slots:
             tmp.setX(tmp.x() - 146);
             tmp.setY(tmp.y() - 130);
             erase(tmp);
+        } else if (selection) {
+            QPoint tmp = ev->pos();
+            tmp.setX(tmp.x() - 146);
+            tmp.setY(tmp.y() - 130);
+            select(tmp, false);
         }
     }
 
     void on_actionPen_toggled(bool arg1);
     void on_actionEraser_toggled(bool arg1);
+    void on_actionSelection_toggled(bool arg1);
 
     void on_actionPen_triggered();
 
     void on_actionEraser_triggered();
+
+    void on_actionSelection_triggered();
 
     void on_actionColorPicker_triggered();
 
@@ -129,27 +149,34 @@ private slots:
 
     void on_actionInverse_triggered();
 
-    void on_actionContrast_triggered();
+    void on_actionContrast_triggered();    
+
+    void on_actionCut_selection_triggered();
+
 private:
     void        savePm();
     void        undo();
     void        redo();
     Ui::MainWindow *ui;
     QPixmap pm;
+    QPixmap selectionPixels;
     QPixmap _lastPm;
     QPixmap _nextPm;
     bool    _redo = false;
+    bool    isSelected = false;
     //QFile currentFile;
     QString currentFile;
     QMessageBox messageBox;
     bool    pen = false;
     bool    eraser = false;
     bool    text = false;
+    bool    selection = false;
     double  penSize = 2.0;
     QColorDialog *palette;
     QSpinBox *spinBoxToolBar;
     QPoint  lastPos;
     QTextEdit *textEdit;
+    QRect selectedArea;
 };
 
 #endif // MAINWINDOW_H

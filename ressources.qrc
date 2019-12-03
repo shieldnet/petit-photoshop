@@ -7,5 +7,6 @@
         <file>icons/pen_copy.png</file>
         <file>icons/color.jpg</file>
         <file>icons/text.png</file>
+        <file>icons/selection.png</file>
     </qresource>
 </RCC>

@@ -13,8 +13,6 @@
 #include <cstdio>
 #include <vector>
 
-#define NORMALIZE(x) x < 0 ? 0 : x > 255 ? 255 : x
-
 using namespace std;
 using namespace cv;
 
@@ -23,7 +21,8 @@ using namespace cv;
 #define B 0
 #define G 1
 #define R 2
-
+#define NORMALIZE(x) x < 0 ? 0 : x > 255 ? 255 : x
+#define ABS(x) x < 0 ? (-x) : (x)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -48,7 +47,8 @@ MainWindow::~MainWindow()
 }
 
 void        MainWindow::updateLabel() {
-    ui->label_image->setPixmap(pm);
+    drawSelection();
+    ui->label_image->setPixmap(selectionPixels);
 }
 
 void        MainWindow::savePm() {
@@ -231,6 +231,9 @@ void MainWindow::doMosaic(int wsize){
                     g_avg += cv_image.at<Vec3b>(y,x)[G];
                     r_avg += cv_image.at<Vec3b>(y,x)[R];
                 }
+            }
+            if (count == 0) {
+                continue;
             }
             r_avg /= count; g_avg /= count; b_avg /= count;
 
@@ -430,6 +433,18 @@ void MainWindow::erase(const QPoint & pos) {
         updateLabel();
 }
 
+void MainWindow::select(const QPoint & pos, bool initialClick)
+{
+    if (initialClick) {
+        selectedArea = QRect(pos, pos);
+        isSelected = true;
+    }
+    selectedArea.setBottomRight(pos);
+
+    update();
+    updateLabel();
+}
+
 void MainWindow::write(const QPoint & pos) {
     QPainter painter{&pm};
     QFont font;
@@ -460,20 +475,72 @@ void MainWindow::on_actionEraser_toggled(bool arg1)
     eraser = arg1;
 }
 
+
+void MainWindow::on_actionSelection_toggled(bool arg1)
+{
+    selection = arg1;
+}
+
 void MainWindow::on_actionPen_triggered()
 {
     eraser = false;
     text = false;
+    selection = false;
     ui->actionEraser->setChecked(false);
     ui->actionPen->setChecked(true);
+    ui->actionSelection->setChecked(false);
 }
 
 void MainWindow::on_actionEraser_triggered()
 {
     pen = false;
     text = false;
+    selection = false;
     ui->actionPen->setChecked(false);
     ui->actionEraser->setChecked(true);
+    ui->actionSelection->setChecked(false);
+}
+
+void MainWindow::drawSelection()
+{
+    QImage image = pm.toImage();
+    QPainter painter{&image};
+
+    painter.drawRect(selectedArea);
+    selectionPixels = QPixmap::fromImage(image);
+}
+
+void MainWindow::clearSelection()
+{
+    selectionPixels.fill(Qt::transparent);
+    selectedArea = QRect(-1, -1, -1, -1);
+    isSelected = false;
+    updateLabel();
+}
+
+void MainWindow::normalizeSelection()
+{
+    QPoint pos1 = selectedArea.topLeft();
+    QPoint pos2 = selectedArea.bottomRight();
+
+    selectedArea.setCoords(
+        pos1.x() <= pos2.x() ? pos1.x() : pos2.x(),
+        pos1.y() <= pos2.y() ? pos1.y() : pos2.y(),
+        pos1.x() <= pos2.x() ? pos2.x() : pos1.x(),
+        pos1.y() <= pos2.y() ? pos2.y() : pos1.y()
+    );
+}
+
+void MainWindow::on_actionSelection_triggered()
+{
+    pen = false;
+    text = false;
+    selection = true;
+    ui->actionPen->setChecked(false);
+    ui->actionEraser->setChecked(false);
+    ui->actionSelection->setChecked(true);
+
+    selectionPixels = QPixmap(pm.toImage().width(), pm.toImage().height());
 }
 
 void MainWindow::on_actionColorPicker_triggered()
@@ -721,7 +788,6 @@ void MainWindow::doContrast(int targetValue)
     unsigned int height = image.height();
     float factor = (float)(259 * (targetValue + 255)) / (255 * (259 - targetValue));
 
-    std::cout << factor << std::endl;
     for(int y = 0; y < height; y++) {
         for(int x = 0; x < width; x++) {
             QColor colorFrom(image.pixel(x, y));
@@ -754,5 +820,45 @@ void MainWindow::on_actionContrast_triggered()
         else{
             doContrast(targetValue);
         }
+    }
+}
+
+void MainWindow::doCutSelection()
+{
+    savePm();
+    QImage image = pm.toImage();
+    unsigned int newWidth = ABS(selectedArea.width());
+    unsigned int newHeight = ABS(selectedArea.height());
+    unsigned int width = image.width();
+    unsigned int height = image.height();
+    QImage output(newWidth, newHeight, QImage::Format_ARGB32);
+
+    for(int y = 0; y < output.height(); y++) {
+        for(int x = 0; x < output.width(); x++) {
+            QColor color = image.pixel(x + selectedArea.topLeft().x(), y + selectedArea.topLeft().y());
+
+            output.setPixel(x, y, color.rgba());
+        }
+    }
+
+    _lastPm = pm;
+    pm = QPixmap::fromImage(output);
+    ui->label_image->resize(selectedArea.width(), selectedArea.height());
+    updateLabel();
+}
+
+void MainWindow::on_actionCut_selection_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action.");
+    }
+    else {
+        if (!isSelected) {
+            errorMessage("You must select an area before this action.");
+            return;
+        }
+        normalizeSelection();
+        doCutSelection();
+        clearSelection();
     }
 }
