@@ -205,27 +205,34 @@ void MainWindow::doMosaic(int wsize){
 
     int y_from=0, y_to=0, x_from=0,x_to=0;
     for(int ystp=0;ystp<y_step;ystp++){
-        y_from = ystp*windowsize; y_to = std::min(width,(ystp+1)*windowsize);
+        y_from = ystp*windowsize; y_to = std::min(width,(ystp+1)*windowsize) + windowsize;
         x_from=0, x_to=0;
         for(int xstp=0;xstp<x_step;xstp++){
             x_from = xstp * windowsize;
-            x_to = min(width,(xstp+1) * windowsize);
-
-            int r_avg=0, b_avg =0, g_avg=0;
+            x_to = min(width,(xstp+1) * windowsize) + windowsize;
+            int r_avg=0, b_avg =0, g_avg=0, count = 0;
 
             //Sliding window
             for(int y=y_from; y<y_to;y++){
+                if (y < 0 || y >= image.height())
+                    continue;
                 for(int x = x_from; x<x_to;x++){
+                    if (x < 0 || x >= image.width())
+                        continue;
+                    count++;
                     b_avg += cv_image.at<Vec3b>(y,x)[B];
                     g_avg += cv_image.at<Vec3b>(y,x)[G];
                     r_avg += cv_image.at<Vec3b>(y,x)[R];
                 }
             }
-            int area=(x_to-x_from)*(y_to-y_from);
-            r_avg /= area; g_avg /= area; b_avg /= area;
+            r_avg /= count; g_avg /= count; b_avg /= count;
 
             for(int y=y_from; y<y_to;y++){
+                if (y < 0 || y >= image.height())
+                    continue;
                 for(int x = x_from; x<x_to;x++){
+                    if (x < 0 || x >= image.width())
+                        continue;
                     cv_image.at<Vec3b>(y,x)[B] = b_avg;
                     cv_image.at<Vec3b>(y,x)[G] = g_avg;
                     cv_image.at<Vec3b>(y,x)[R] = r_avg;
@@ -555,6 +562,7 @@ void MainWindow::doGaussianBlur(int intensity) {
     int r;
     int g;
     int b;
+    int count;
     int mask[5][5] = {
         {1, 4, 6, 4, 1},
         {4, 16, 24, 16, 4},
@@ -566,7 +574,7 @@ void MainWindow::doGaussianBlur(int intensity) {
     for (int i = 0; i < intensity; i++) {
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
-                r = 0; g = 0; b = 0;
+                r = 0; g = 0; b = 0; count = 0;
 
                 for (int y1 = 0; y1 < 5; y1++) {
                     if (y1 + y - 2 < 0 || y1 + y - 2 >= image.height())
@@ -575,16 +583,16 @@ void MainWindow::doGaussianBlur(int intensity) {
                         if (x1 + x - 2 < 0 || x1 + x - 2 >= image.width())
                             continue;
                         QColor color(image.pixel(x + x1 - 2, y + y1 - 2));
-
+                        count += mask[y1][x1];
                         r += color.red() * mask[y1][x1];
                         g += color.green() * mask[y1][x1];
                         b += color.blue() * mask[y1][x1];
                     }
                 }
 
-                r /= 256;
-                g /= 256;
-                b /= 256;
+                r /= count;
+                g /= count;
+                b /= count;
 
                 cv_image.at<Vec3b>(y, x)[B]=(unsigned char)b;
                 cv_image.at<Vec3b>(y, x)[G]=(unsigned char)g;
