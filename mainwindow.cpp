@@ -283,12 +283,73 @@ void MainWindow::on_actionEdge_Detection_triggered(){
     }
 }
 
-void MainWindow::doEdgeDetection(int threshold_percent){
+
+void MainWindow::on_actionBinarization_triggered(){
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else {
+        bool ok=false;
+        int threshold = QInputDialog::getInt(this, tr("Binarization Threshold"),
+                                         tr("Threshold:"), 25, 0, 255, 1, &ok);
+        if(threshold<=0){
+            errorMessage("You have to set positive integer for windowsize.");
+        }
+        else{
+            doBinarization(threshold);
+        }
+
+    }
+}
+
+
+
+void MainWindow::doBinarization(int threshold){
     QImage image = pm.toImage();
     int height = image.height();
     int width  = image.width();
     Mat cv_image(image.height(), image.width(), CV_8UC3);
     vector<vector<int> > arr(height, vector<int>(width, 0));
+    QColor color;
+    //Initialize Image + Binarization(QImage to Mat)
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width;x++){
+            color= QColor(image.pixel(x,y));
+            int _b = cv_image.at<Vec3b>(y,x)[B]=(unsigned char)color.blue();
+            int _g = cv_image.at<Vec3b>(y,x)[G]=(unsigned char)color.green();
+            int _r = cv_image.at<Vec3b>(y,x)[R]=(unsigned char)color.red();
+            int intensity = (_b+_g+_r)/3;
+
+            cv_image.at<Vec3b>(y,x)[B] = (intensity > threshold) ? 255:0;
+            cv_image.at<Vec3b>(y,x)[G] = (intensity > threshold) ? 255:0;
+            cv_image.at<Vec3b>(y,x)[R] = (intensity > threshold) ? 255:0;
+        }
+    }
+
+
+    //Mat to QImage
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width;x++){
+            QColor color(image.pixel(x,y));
+            int _b=cv_image.at<Vec3b>(y,x)[B];
+            int _g=cv_image.at<Vec3b>(y,x)[G];
+            int _r=cv_image.at<Vec3b>(y,x)[R];
+            color.setRgb(_r,_g,_b);
+            image.setPixel(x, y, color.rgba());
+        }
+    }
+    arr.clear();
+    pm = QPixmap::fromImage(image);
+    update();
+    updateLabel();
+}
+
+
+void MainWindow::doEdgeDetection(int threshold_percent){
+    QImage image = pm.toImage();
+    int height = image.height();
+    int width  = image.width();
+    Mat cv_image(image.height(), image.width(), CV_8UC3);
     QColor color;
     //Initialize Image (QImage to Mat)
     for(int y=0;y<height;y++){
