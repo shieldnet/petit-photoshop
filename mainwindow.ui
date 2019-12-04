@@ -110,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>476</width>
-     <height>17</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -330,6 +330,9 @@
    </property>
   </action>
   <action name="actionTextBox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
      <normaloff>:/icons/text.png</normaloff>:/icons/text.png</iconset>

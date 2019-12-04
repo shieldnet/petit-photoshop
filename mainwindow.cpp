@@ -559,22 +559,26 @@ void MainWindow::on_actionSelection_toggled(bool arg1)
 
 void MainWindow::on_actionPen_triggered()
 {
+    pen = true;
     eraser = false;
     text = false;
     selection = false;
     ui->actionEraser->setChecked(false);
     ui->actionPen->setChecked(true);
     ui->actionSelection->setChecked(false);
+    ui->actionTextBox->setChecked(false);
 }
 
 void MainWindow::on_actionEraser_triggered()
 {
+    eraser = true;
     pen = false;
     text = false;
     selection = false;
     ui->actionPen->setChecked(false);
     ui->actionEraser->setChecked(true);
     ui->actionSelection->setChecked(false);
+    ui->actionTextBox->setChecked(false);
 }
 
 void MainWindow::drawSelection()
@@ -609,12 +613,14 @@ void MainWindow::normalizeSelection()
 
 void MainWindow::on_actionSelection_triggered()
 {
+    eraser = false;
     pen = false;
     text = false;
     selection = true;
     ui->actionPen->setChecked(false);
     ui->actionEraser->setChecked(false);
     ui->actionSelection->setChecked(true);
+    ui->actionTextBox->setChecked(false);
 
     selectionPixels = QPixmap(pm.toImage().width(), pm.toImage().height());
 }
@@ -628,7 +634,12 @@ void MainWindow::on_actionTextBox_triggered()
 {
     eraser = false;
     pen = false;
+    selection = false;
     text = true;
+    ui->actionPen->setChecked(false);
+    ui->actionEraser->setChecked(false);
+    ui->actionSelection->setChecked(false);
+    ui->actionTextBox->setChecked(true);
 }
 
 void MainWindow::undo() {
