@@ -353,6 +353,7 @@ void MainWindow::doEdgeDetection(int threshold_percent){
     int height = image.height();
     int width  = image.width();
     Mat cv_image(image.height(), image.width(), CV_8UC3);
+    vector<vector<int>> arr(height, vector<int>(width, 0));
     QColor color;
     //Initialize Image (QImage to Mat)
     for(int y=0;y<height;y++){

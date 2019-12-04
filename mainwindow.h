@@ -66,6 +66,7 @@ private slots:
     void    doInverse();
     void    doContrast(int);
     void    doCutSelection();
+    void    doBinarization(int);
 
     void    draw(const QPoint & pos);
     void    erase(const QPoint & pos);
@@ -152,6 +153,8 @@ private slots:
     void on_actionContrast_triggered();    
 
     void on_actionCut_selection_triggered();
+
+    void on_actionBinarization_triggered();
 
 private:
     void        savePm();

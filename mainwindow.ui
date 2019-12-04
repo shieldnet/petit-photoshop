@@ -141,6 +141,7 @@
     </property>
     <addaction name="actionBrightness"/>
     <addaction name="actionBlack_White"/>
+    <addaction name="actionBinarization"/>
     <addaction name="actionContrast"/>
     <addaction name="actionBlur"/>
     <addaction name="actionResize"/>
@@ -351,6 +352,11 @@
   <action name="actionCut_selection">
    <property name="text">
     <string>Cut selection</string>
+   </property>
+  </action>
+  <action name="actionBinarization">
+   <property name="text">
+    <string>Binarization</string>
    </property>
   </action>
  </widget>
