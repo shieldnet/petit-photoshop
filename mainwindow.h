@@ -79,6 +79,7 @@ private slots:
     void    applyOnlyToSelection();
 
     void mousePressEvent(QMouseEvent * ev) override {
+        spinBoxToolBar->clearFocus();
         if (pen) {
             savePm();
             QPoint tmp = ev->pos();

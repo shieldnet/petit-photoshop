@@ -37,7 +37,9 @@ MainWindow::MainWindow(QWidget *parent) :
     palette = new QColorDialog(this);
     spinBoxToolBar = new QSpinBox(this);
     spinBoxToolBar->setMinimum(2);
+    spinBoxToolBar->setValue(42);
     spinBoxToolBar->setToolTip("Pen's width");
+    spinBoxToolBar->setFocusPolicy( Qt::ClickFocus );
     ui->mainToolBar->addWidget(spinBoxToolBar);
 }
 
