@@ -110,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>476</width>
-     <height>26</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -293,7 +293,7 @@
    </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/back.jpg</normaloff>:/icons/back.jpg</iconset>
+     <normaloff>:/icons/back.png</normaloff>:/icons/back.png</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -308,7 +308,7 @@
    </property>
    <property name="icon">
     <iconset resource="ressources.qrc">
-     <normaloff>:/icons/backUndo.jpg</normaloff>:/icons/backUndo.jpg</iconset>
+     <normaloff>:/icons/backUndo.png</normaloff>:/icons/backUndo.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
