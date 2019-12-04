@@ -497,11 +497,19 @@ void MainWindow::erase(const QPoint & pos) {
 
 void MainWindow::select(const QPoint & pos, bool initialClick)
 {
+    QImage image = pm.toImage();
+    int width = image.width();
+    int height = image.height();
+
     if (initialClick) {
         selectedArea = QRect(pos, pos);
         isSelected = true;
     }
-    selectedArea.setBottomRight(pos);
+    QPoint justifiedPos = QPoint(
+                pos.x() < 0 ? 0 : pos.x() >= width ? width - 1 : pos.x(),
+                pos.y() < 0 ? 0 : pos.y() >= height ? height - 1 : pos.y()
+    );
+    selectedArea.setBottomRight(justifiedPos);
 
     update();
     updateLabel();
@@ -923,4 +931,164 @@ void MainWindow::on_actionCut_selection_triggered()
         doCutSelection();
         clearSelection();
     }
+}
+
+void MainWindow::on_actionContrast_selection_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        bool ok=false;
+        int targetValue = QInputDialog::getInt(this, tr("Contrast value: "), tr("value:"), 0, -255, 255, 1, &ok);
+        if (targetValue < -255 || targetValue > 255){
+            errorMessage("You have to set an integer between -255 and 255.");
+        }
+        else{
+            doContrast(targetValue);
+            applyOnlyToSelection();
+        }
+    }
+}
+
+void MainWindow::on_actionInverse_selection_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        doInverse();
+        applyOnlyToSelection();
+    }
+}
+
+
+void MainWindow::on_actionBlur_selection_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        bool ok=false;
+        int intensity = QInputDialog::getInt(this, tr("Blur intensity"), tr("Intensity:"), 0, 0, 20, 1, &ok);
+        if(intensity < 0 || intensity > 100){
+            errorMessage("You have to set an integer between 0 and 20.");
+        }
+        else{
+            doGaussianBlur(intensity);
+            applyOnlyToSelection();
+        }
+
+    }
+}
+
+void MainWindow::on_actionBrightness_selection_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        bool ok=false;
+        int level = QInputDialog::getInt(this, tr("Level of Brightness (between -255 and 255)"),
+                                         tr("Level:"), 0, -255, 255, 1, &ok);
+        if(level< -255 || level > 255){
+            errorMessage("You have to set an integer between -255 and 255.");
+        }
+        else{
+            doBrightness(level);
+            applyOnlyToSelection();
+        }
+
+    }
+}
+
+
+void MainWindow::on_actionEdge_Detection_selection_triggered(){
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        bool ok=false;
+        int threshold = QInputDialog::getInt(this, tr("Edgedetection Threshold"),
+                                         tr("Threshold:"), 25, 0, 255, 1, &ok);
+        if(threshold<=0){
+            errorMessage("You have to set positive integer for windowsize.");
+        }
+        else{
+            doEdgeDetection(threshold);
+            applyOnlyToSelection();
+        }
+
+    }
+}
+
+void MainWindow::on_actionBlack_White_selection_triggered()
+{
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        doGrayScale();
+        applyOnlyToSelection();
+    }
+}
+
+void MainWindow::on_actionBinarization_selection_triggered(){
+    if (pm.isNull()) {
+        errorMessage("You must open an image before this action");
+    }
+    else if (!isSelected) {
+        errorMessage("You must select an area before this action");
+    }
+    else {
+        bool ok=false;
+        int threshold = QInputDialog::getInt(this, tr("Binarization Threshold"),
+                                         tr("Threshold:"), 25, 0, 255, 1, &ok);
+        if(threshold<=0){
+            errorMessage("You have to set positive integer for windowsize.");
+        }
+        else{
+            doBinarization(threshold);
+            applyOnlyToSelection();
+        }
+    }
+}
+
+void MainWindow::applyOnlyToSelection()
+{
+    QImage image = pm.toImage();
+    QImage prev = _lastPm.toImage();
+    unsigned int width = image.width();
+    unsigned int height = image.height();
+
+    for(int y = 0; y < height; y++) {
+        for(int x = 0; x < width; x++) {
+            if (!selectedArea.contains(QPoint(x, y))) {
+                QColor color = prev.pixel(x, y);
+                image.setPixel(x, y, color.rgba());
+            }
+        }
+    }
+    std::cout << "selectloop/" << std::endl;
+
+    pm = QPixmap::fromImage(image);
+    updateLabel();
 }

@@ -154,6 +154,13 @@
      <string>Selection</string>
     </property>
     <addaction name="actionCut_selection"/>
+    <addaction name="actionBrightness_selection"/>
+    <addaction name="actionBlack_White_selection"/>
+    <addaction name="actionBinarization_selection"/>
+    <addaction name="actionContrast_selection"/>
+    <addaction name="actionBlur_selection"/>
+    <addaction name="actionInverse_selection"/>
+    <addaction name="actionEdge_Detection_selection"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -357,6 +364,41 @@
   <action name="actionBinarization">
    <property name="text">
     <string>Binarization</string>
+   </property>
+  </action>
+  <action name="actionBrightness_selection">
+   <property name="text">
+    <string>Brightness</string>
+   </property>
+  </action>
+  <action name="actionBlack_White_selection">
+   <property name="text">
+    <string>Black and white</string>
+   </property>
+  </action>
+  <action name="actionBinarization_selection">
+   <property name="text">
+    <string>Binarization</string>
+   </property>
+  </action>
+  <action name="actionContrast_selection">
+   <property name="text">
+    <string>Contrast</string>
+   </property>
+  </action>
+  <action name="actionBlur_selection">
+   <property name="text">
+    <string>Blur</string>
+   </property>
+  </action>
+  <action name="actionEdge_Detection_selection">
+   <property name="text">
+    <string>Edge detection</string>
+   </property>
+  </action>
+  <action name="actionInverse_selection">
+   <property name="text">
+    <string>Inverse</string>
    </property>
   </action>
  </widget>

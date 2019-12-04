@@ -76,6 +76,7 @@ private slots:
     void    drawSelection();
     void    clearSelection();
     void    normalizeSelection();
+    void    applyOnlyToSelection();
 
     void mousePressEvent(QMouseEvent * ev) override {
         if (pen) {
@@ -155,6 +156,14 @@ private slots:
     void on_actionCut_selection_triggered();
 
     void on_actionBinarization_triggered();
+
+    void on_actionBlack_White_selection_triggered();
+    void on_actionEdge_Detection_selection_triggered();
+    void on_actionInverse_selection_triggered();
+    void on_actionContrast_selection_triggered();
+    void on_actionBlur_selection_triggered();
+    void on_actionBrightness_selection_triggered();
+    void on_actionBinarization_selection_triggered();
 
 private:
     void        savePm();
