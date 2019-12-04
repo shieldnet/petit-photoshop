@@ -185,6 +185,7 @@ void MainWindow::on_actionMosaic_triggered()
 }
 
 void MainWindow::doMosaic(int wsize){
+    savePm();
     QImage image = pm.toImage();
     int height = image.height();
     int width  = image.width();
@@ -308,6 +309,7 @@ void MainWindow::on_actionBinarization_triggered(){
 
 
 void MainWindow::doBinarization(int threshold){
+    savePm();
     QImage image = pm.toImage();
     int height = image.height();
     int width  = image.width();
@@ -349,6 +351,7 @@ void MainWindow::doBinarization(int threshold){
 
 
 void MainWindow::doEdgeDetection(int threshold_percent){
+    savePm();
     QImage image = pm.toImage();
     int height = image.height();
     int width  = image.width();
@@ -508,6 +511,7 @@ void MainWindow::select(const QPoint & pos, bool initialClick)
 }
 
 void MainWindow::write(const QPoint & pos) {
+    savePm();
     QPainter painter{&pm};
     QFont font;
 

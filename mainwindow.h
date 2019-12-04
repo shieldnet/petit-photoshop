@@ -79,18 +79,21 @@ private slots:
 
     void mousePressEvent(QMouseEvent * ev) override {
         if (pen) {
+            savePm();
             QPoint tmp = ev->pos();
             tmp.setX(tmp.x() - 146);
             tmp.setY(tmp.y() - 130);
             lastPos = tmp;
             draw(tmp);
         } else if (eraser) {
+            savePm();
             QPoint tmp = ev->pos();
             tmp.setX(tmp.x() - 146);
             tmp.setY(tmp.y() - 130);
             lastPos = tmp;
             erase(tmp);
         }else if (text) {
+            savePm();
             QPoint tmp = ev->pos();
             tmp.setX(tmp.x() - 146);
             tmp.setY(tmp.y() - 130);
